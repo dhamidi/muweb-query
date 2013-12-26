@@ -1,0 +1,30 @@
+* Description
+
+This package provides functions for generating queries for the mail
+indexer [[http://www.djcbsoftware.nl/code/mu/][mu]] in Go.  The string representation of a query is suitable for
+use as arguments to the =mu find= command.
+
+* Usage
+
+#+BEGIN_SRC go
+  import (
+          "github.com/dhamidi/muweb-query"
+          "fmt"
+  )
+
+  func main() {
+          q := query.Subject("important")
+          .And(query.From("mail@company"))
+          .SortBy("size")
+
+          fmt.Print(q.String())
+          // Output:
+          // subject:'important' from:'mail@company' --sortfield='size'
+  }
+#+END_SRC
+
+* Development Notes
+
+The file [[file:constructors.go][constructors.go]] is generated with [[file:tools/emit-query-constructor][emit-query-constructor]].  Do
+not edit this file by hand!  It will be overriden when
+[[file:data/mu-search-fields][data/mu-search-fields]] is changed.
