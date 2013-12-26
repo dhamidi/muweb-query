@@ -1,11 +1,12 @@
-package muweb
+package query
 
 import (
 	"regexp"
 	"strings"
+	"fmt"
 )
 
-const (
+var (
 	SHELL_ESCAPE_RE = regexp.MustCompile("'")
 )
 
@@ -29,7 +30,7 @@ type CompoundQuery struct {
 
 func (self *SimpleQuery) String() string {
 	return fmt.Sprintf("%s:%s",
-		shellescape(self.key),
+		self.key,
 		shellescape(self.value),
 	)
 }
@@ -53,7 +54,7 @@ func NewAndQuery(a, b Query) Query {
 	return cq.And(a).And(b)
 }
 
-func NewCompoundQuery() CompoundQuery {
+func NewCompoundQuery() *CompoundQuery {
 	return &CompoundQuery{
 		sortfield: "",
 		reverse:   false,
@@ -71,14 +72,17 @@ func (self *CompoundQuery) SortBy(field string) Query {
 	return self
 }
 
-func (self *CompoundQuery) reverse() Query {
+func (self *CompoundQuery) Reverse() Query {
 	self.reverse = true
+	if self.sortfield == "" {
+		self.sortfield = "date"
+	}
 	return self
 }
 
 func (self *CompoundQuery) String() string {
-	queries = []string{}
-	for q := range self.queries {
+	queries := []string{}
+	for _, q := range self.queries {
 		queries = append(queries, q.String())
 	}
 
