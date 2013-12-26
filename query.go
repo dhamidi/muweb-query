@@ -91,18 +91,17 @@ func (self *CompoundQuery) Args() []string {
 		queries = append(queries, q.String())
 	}
 
-	queries = append(queries, self.sortArgs())
+	queries = append(queries, self.sortArgs()...)
 	return queries
 }
 
 func (self *CompoundQuery) String() string {
-
-	return strings.Join(queries, " ")
+	return strings.Join(self.Args(), " ")
 }
 
 func (self *CompoundQuery) sortArgs() []string {
 	if self.sortfield == "" {
-		return ""
+		return []string{""}
 	}
 
 	s := []string{fmt.Sprintf("--sortfield=%s", shellescape(self.sortfield))}
