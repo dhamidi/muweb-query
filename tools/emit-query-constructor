@@ -1,0 +1,15 @@
+#!/usr/bin/awk -f
+BEGIN {
+    printf "package query\n"
+}
+
+function ucfirst(s) {
+    return toupper(substr(s, 1, 1)) substr(s, 2)
+}
+
+{
+    printf "\n"
+    printf "func %s(v string) *SimpleQuery {\n", ucfirst($0)
+    printf "	return &SimpleQuery{key: \"%s\", value: v}\n", $0
+    printf "}\n"
+}
