@@ -11,6 +11,7 @@ var (
 )
 
 type Query interface {
+	Args() []string
 	String() string
 	And(Query) Query
 	SortBy(string) Query
@@ -26,6 +27,10 @@ type CompoundQuery struct {
 	sortfield string
 	reverse   bool
 	queries   []Query
+}
+
+func (self *SimpleQuery) Args() []string {
+	return []string{self.String()}
 }
 
 func (self *SimpleQuery) String() string {
@@ -80,17 +85,22 @@ func (self *CompoundQuery) Reverse() Query {
 	return self
 }
 
-func (self *CompoundQuery) String() string {
+func (self *CompoundQuery) Args() []string {
 	queries := []string{}
 	for _, q := range self.queries {
 		queries = append(queries, q.String())
 	}
 
-	queries = append(queries, self.sortString())
+	queries = append(queries, self.sortArgs())
+	return queries
+}
+
+func (self *CompoundQuery) String() string {
+
 	return strings.Join(queries, " ")
 }
 
-func (self *CompoundQuery) sortString() string {
+func (self *CompoundQuery) sortArgs() []string {
 	if self.sortfield == "" {
 		return ""
 	}
@@ -100,7 +110,11 @@ func (self *CompoundQuery) sortString() string {
 		s = append(s, "--reverse")
 	}
 
-	return strings.Join(s, " ")
+	return s
+}
+
+func (self *CompoundQuery) sortString() string {
+	return strings.Join(self.sortArgs(), " ")
 }
 
 func shellescape(s string) string {
